@@ -9,6 +9,9 @@ class ChartConfig {
   final double radius;
   final TextStyle? tooltipTextStyle;
   final TextStyle? legendTextStyle;
+  final bool isDoughnut; // новый параметр для кольцевого графика
+  final double
+  centerSpaceRatio; // соотношение пустого центра к радиусу (0.0 - 1.0)
 
   const ChartConfig({
     required this.items,
@@ -18,5 +21,7 @@ class ChartConfig {
     this.radius = 100.0,
     this.tooltipTextStyle,
     this.legendTextStyle,
+    this.isDoughnut = true,
+    this.centerSpaceRatio = 0.8,
   });
 }

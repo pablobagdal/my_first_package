@@ -130,7 +130,9 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
           child: PieChart(
             PieChartData(
               sections: _buildSections(currentConfig),
-              centerSpaceRadius: 0,
+              centerSpaceRadius: currentConfig.isDoughnut
+                  ? currentConfig.radius * currentConfig.centerSpaceRatio
+                  : 0,
               sectionsSpace: 2,
               pieTouchData: currentConfig.enableTooltips
                   ? _buildTouchData(currentConfig)
@@ -168,7 +170,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
         value: item.value,
         color: item.color,
         title: '${percentage.toStringAsFixed(2)}%',
-        radius: config.radius * 0.8,
+        radius: config.radius * (1 - config.centerSpaceRatio),
         titleStyle: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
