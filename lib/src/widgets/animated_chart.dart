@@ -118,36 +118,21 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
     return Stack(
       alignment: Alignment.center,
       children: [
-        if (currentConfig.showLegend) ...[_buildLegend(currentConfig)],
-
-        // _buildLegend(currentConfig),
-        Transform.rotate(
-          angle: _rotationAnimation.value,
-          child: Opacity(
-            opacity: _isAnimating ? _fadeAnimation.value : 1.0,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: currentConfig.radius * 2,
-                  width: currentConfig.radius * 2,
-                  child: PieChart(
-                    PieChartData(
-                      sections: _buildSections(currentConfig),
-                      centerSpaceRadius: currentConfig.isDoughnut
-                          ? currentConfig.radius *
-                                currentConfig.centerSpaceRatio
-                          : 0,
-                      sectionsSpace: 0,
-                      pieTouchData: currentConfig.enableTooltips
-                          ? _buildTouchData(currentConfig)
-                          : PieTouchData(enabled: false),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        if (currentConfig.showLegend) ...[
+          SizedBox(
+            width: currentConfig.radius * 1.414213562, // sqrt(2)
+            child: Center(child: _buildLegend(currentConfig)),
           ),
+        ],
+
+        if (_oldConfig != null)
+          Opacity(
+            opacity: 1 - _fadeAnimation.value,
+            child: _buildPieChart(_oldConfig!),
+          ),
+        Opacity(
+          opacity: _fadeAnimation.value,
+          child: _buildPieChart(currentConfig),
         ),
       ],
     );
@@ -214,14 +199,62 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
       children: currentConfig.items.map((item) {
         final percentage = (item.value / total * 100);
 
-        return Text(
-          '${item.label} - ${percentage.toStringAsFixed(2)}%',
-          style:
-              currentConfig.legendTextStyle ??
-              Theme.of(context).textTheme.bodySmall,
-          overflow: TextOverflow.ellipsis,
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: item.color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 4.0),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: currentConfig.radius * 1.414213562 - 24,
+              ),
+              child: Text(
+                '${percentage.toStringAsFixed(2)}% ${item.label}',
+                style:
+                    currentConfig.legendTextStyle ??
+                    Theme.of(context).textTheme.bodySmall,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                softWrap: false,
+              ),
+            ),
+          ],
         );
       }).toList(),
+    );
+  }
+
+  Widget _buildPieChart(ChartConfig currentConfig) {
+    return Transform.rotate(
+      angle: _rotationAnimation.value,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: currentConfig.radius * 2,
+            width: currentConfig.radius * 2,
+            child: PieChart(
+              PieChartData(
+                sections: _buildSections(currentConfig),
+                centerSpaceRadius: currentConfig.isDoughnut
+                    ? currentConfig.radius * currentConfig.centerSpaceRatio
+                    : 0,
+                sectionsSpace: 0,
+                pieTouchData: currentConfig.enableTooltips
+                    ? _buildTouchData(currentConfig)
+                    : PieTouchData(enabled: false),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
