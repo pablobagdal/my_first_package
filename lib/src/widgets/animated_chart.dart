@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/chart_config.dart';
+import '../models/chart_config.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class AnimatedPieChart extends StatefulWidget {
@@ -97,7 +97,12 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
           width: currentConfig.radius * 2,
           child: PieChart(
             PieChartData(
-              // TODO
+              sections: _buildSections(currentConfig),
+              centerSpaceRadius: 0,
+              sectionsSpace: 2,
+              pieTouchData: currentConfig.enableTooltips
+                  ? _buildTouchData(currentConfig)
+                  : PieTouchData(enabled: false),
             ),
           ),
         ),
@@ -107,6 +112,38 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
         ],
       ],
     );
+  }
+
+  PieTouchData _buildTouchData(ChartConfig config) {
+    return PieTouchData(
+      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+        // Обработка тач-событий для тултипов
+      },
+      mouseCursorResolver: (FlTouchEvent event, pieTouchResponse) {
+        return pieTouchResponse?.touchedSection != null
+            ? SystemMouseCursors.click
+            : SystemMouseCursors.basic;
+      },
+    );
+  }
+
+  List<PieChartSectionData> _buildSections(ChartConfig config) {
+    final total = config.items.fold<double>(0, (sum, item) => sum + item.value);
+
+    return config.items.map((item) {
+      final percentage = (item.value / total * 100);
+      return PieChartSectionData(
+        value: item.value,
+        color: item.color,
+        title: '${percentage.toStringAsFixed(2)}%',
+        radius: config.radius * 0.8,
+        titleStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      );
+    }).toList();
   }
 
   // can throw an exception if the config is null
