@@ -17,7 +17,7 @@ class ChartConfig {
     required this.items,
     this.showLegend = true,
     this.enableTooltips = true,
-    this.animationDuration = const Duration(milliseconds: 1000),
+    this.animationDuration = const Duration(milliseconds: 2500),
     this.radius = 100.0,
     this.tooltipTextStyle,
     this.legendTextStyle,

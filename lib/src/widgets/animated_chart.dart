@@ -93,13 +93,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
     return AnimatedBuilder(
       animation: Listenable.merge([_rotationController, _fadeController]),
       builder: (context, child) {
-        return Transform.rotate(
-          angle: _rotationAnimation.value,
-          child: Opacity(
-            opacity: _isAnimating ? _fadeAnimation.value : 1.0,
-            child: _buildChart(),
-          ),
-        );
+        return _buildChart();
       },
     );
   }
@@ -124,37 +118,36 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
     return Stack(
       alignment: Alignment.center,
       children: [
-        _buildLegend(currentConfig),
-        // Text(
-        //   'Hello, Pie Chart!',
-        //   style:
-        //       currentConfig.tooltipTextStyle ??
-        //       Theme.of(context).textTheme.bodyMedium,
-        // ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              height: currentConfig.radius * 2,
-              width: currentConfig.radius * 2,
-              child: PieChart(
-                PieChartData(
-                  sections: _buildSections(currentConfig),
-                  centerSpaceRadius: currentConfig.isDoughnut
-                      ? currentConfig.radius * currentConfig.centerSpaceRatio
-                      : 0,
-                  sectionsSpace: 2,
-                  pieTouchData: currentConfig.enableTooltips
-                      ? _buildTouchData(currentConfig)
-                      : PieTouchData(enabled: false),
+        if (currentConfig.showLegend) ...[_buildLegend(currentConfig)],
+
+        // _buildLegend(currentConfig),
+        Transform.rotate(
+          angle: _rotationAnimation.value,
+          child: Opacity(
+            opacity: _isAnimating ? _fadeAnimation.value : 1.0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: currentConfig.radius * 2,
+                  width: currentConfig.radius * 2,
+                  child: PieChart(
+                    PieChartData(
+                      sections: _buildSections(currentConfig),
+                      centerSpaceRadius: currentConfig.isDoughnut
+                          ? currentConfig.radius *
+                                currentConfig.centerSpaceRatio
+                          : 0,
+                      sectionsSpace: 0,
+                      pieTouchData: currentConfig.enableTooltips
+                          ? _buildTouchData(currentConfig)
+                          : PieTouchData(enabled: false),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-            // if (currentConfig.showLegend) ...[
-            //   const SizedBox(height: 16),
-            //   _buildLegend(currentConfig),
-            // ],
-          ],
+          ),
         ),
       ],
     );
@@ -179,6 +172,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
     return config.items.map((item) {
       // final percentage = (item.value / total * 100);
       return PieChartSectionData(
+        showTitle: false,
         value: item.value,
         color: item.color,
         // title: '${percentage.toStringAsFixed(2)}%',
@@ -214,31 +208,18 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
     );
 
     return Wrap(
+      direction: Axis.vertical,
       spacing: 16,
       runSpacing: 8,
       children: currentConfig.items.map((item) {
         final percentage = (item.value / total * 100);
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                color: item.color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 4.0),
-            Text(
-              '${item.label} - ${percentage.toStringAsFixed(2)}%',
-              style:
-                  currentConfig.legendTextStyle ??
-                  Theme.of(context).textTheme.bodySmall,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+        return Text(
+          '${item.label} - ${percentage.toStringAsFixed(2)}%',
+          style:
+              currentConfig.legendTextStyle ??
+              Theme.of(context).textTheme.bodySmall,
+          overflow: TextOverflow.ellipsis,
         );
       }).toList(),
     );
