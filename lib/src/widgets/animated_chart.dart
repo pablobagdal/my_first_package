@@ -121,29 +121,41 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
   Widget _buildChart() {
     final currentConfig = _getCurrentConfig();
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
+      alignment: Alignment.center,
       children: [
-        SizedBox(
-          height: currentConfig.radius * 2,
-          width: currentConfig.radius * 2,
-          child: PieChart(
-            PieChartData(
-              sections: _buildSections(currentConfig),
-              centerSpaceRadius: currentConfig.isDoughnut
-                  ? currentConfig.radius * currentConfig.centerSpaceRatio
-                  : 0,
-              sectionsSpace: 2,
-              pieTouchData: currentConfig.enableTooltips
-                  ? _buildTouchData(currentConfig)
-                  : PieTouchData(enabled: false),
+        _buildLegend(currentConfig),
+        // Text(
+        //   'Hello, Pie Chart!',
+        //   style:
+        //       currentConfig.tooltipTextStyle ??
+        //       Theme.of(context).textTheme.bodyMedium,
+        // ),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: currentConfig.radius * 2,
+              width: currentConfig.radius * 2,
+              child: PieChart(
+                PieChartData(
+                  sections: _buildSections(currentConfig),
+                  centerSpaceRadius: currentConfig.isDoughnut
+                      ? currentConfig.radius * currentConfig.centerSpaceRatio
+                      : 0,
+                  sectionsSpace: 2,
+                  pieTouchData: currentConfig.enableTooltips
+                      ? _buildTouchData(currentConfig)
+                      : PieTouchData(enabled: false),
+                ),
+              ),
             ),
-          ),
+            // if (currentConfig.showLegend) ...[
+            //   const SizedBox(height: 16),
+            //   _buildLegend(currentConfig),
+            // ],
+          ],
         ),
-        if (currentConfig.showLegend) ...[
-          const SizedBox(height: 16),
-          _buildLegend(currentConfig),
-        ],
       ],
     );
   }
@@ -162,20 +174,20 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
   }
 
   List<PieChartSectionData> _buildSections(ChartConfig config) {
-    final total = config.items.fold<double>(0, (sum, item) => sum + item.value);
+    // final total = config.items.fold<double>(0, (sum, item) => sum + item.value);
 
     return config.items.map((item) {
-      final percentage = (item.value / total * 100);
+      // final percentage = (item.value / total * 100);
       return PieChartSectionData(
         value: item.value,
         color: item.color,
-        title: '${percentage.toStringAsFixed(2)}%',
+        // title: '${percentage.toStringAsFixed(2)}%',
         radius: config.radius * (1 - config.centerSpaceRatio),
-        titleStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
+        // titleStyle: const TextStyle(
+        //   fontSize: 12,
+        //   fontWeight: FontWeight.bold,
+        //   color: Colors.white,
+        // ),
       );
     }).toList();
   }
@@ -196,11 +208,18 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
   }
 
   Widget _buildLegend(ChartConfig currentConfig) {
+    final total = currentConfig.items.fold<double>(
+      0,
+      (sum, item) => sum + item.value,
+    );
+
     return Wrap(
       spacing: 16,
       runSpacing: 8,
       children: currentConfig.items.map((item) {
-        return Row(
+        final percentage = (item.value / total * 100);
+
+        return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
@@ -213,7 +232,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
             ),
             const SizedBox(width: 4.0),
             Text(
-              item.label,
+              '${item.label} - ${percentage.toStringAsFixed(2)}%',
               style:
                   currentConfig.legendTextStyle ??
                   Theme.of(context).textTheme.bodySmall,
