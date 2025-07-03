@@ -20,6 +20,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
     with TickerProviderStateMixin {
   late AnimationController _rotationController;
   late AnimationController _fadeController;
+
   late Animation<double> _rotationAnimation;
   late Animation<double> _fadeAnimation;
 
@@ -54,6 +55,37 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
         milliseconds: widget.config.animationDuration.inMilliseconds ~/ 2,
       ),
     );
+
+    _rotationAnimation = Tween<double>(begin: 0, end: 2 * 3.1415926535).animate(
+      CurvedAnimation(parent: _rotationController, curve: Curves.easeInOut),
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _fadeController, curve: Curves.easeIn));
+
+    _rotationController.addListener(() {
+      if (_rotationController.value >= 0.5 && !_fadeController.isCompleted) {
+        _fadeController.forward();
+      }
+    });
+
+    _fadeController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          _oldConfig = null;
+        });
+        _fadeController.reverse();
+      }
+    });
+
+    _rotationController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _isAnimating = false;
+        widget.onAnimationComplete?.call();
+      }
+    });
   }
 
   @override
