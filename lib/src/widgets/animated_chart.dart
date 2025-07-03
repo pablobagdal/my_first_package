@@ -131,7 +131,7 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
             child: _buildPieChart(_oldConfig!),
           ),
         Opacity(
-          opacity: _fadeAnimation.value,
+          opacity: _isAnimating ? _fadeAnimation.value : 1.0,
           child: _buildPieChart(currentConfig),
         ),
       ],
