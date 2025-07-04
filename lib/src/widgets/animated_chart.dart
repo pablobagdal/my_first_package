@@ -7,10 +7,10 @@ class AnimatedPieChart extends StatefulWidget {
   final VoidCallback? onAnimationComplete;
 
   const AnimatedPieChart({
-    Key? key,
+    super.key,
     required this.config,
     this.onAnimationComplete,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _AnimatedPieChartState();
@@ -152,21 +152,12 @@ class _AnimatedPieChartState extends State<AnimatedPieChart>
   }
 
   List<PieChartSectionData> _buildSections(ChartConfig config) {
-    // final total = config.items.fold<double>(0, (sum, item) => sum + item.value);
-
     return config.items.map((item) {
-      // final percentage = (item.value / total * 100);
       return PieChartSectionData(
         showTitle: false,
         value: item.value,
         color: item.color,
-        // title: '${percentage.toStringAsFixed(2)}%',
         radius: config.radius * (1 - config.centerSpaceRatio),
-        // titleStyle: const TextStyle(
-        //   fontSize: 12,
-        //   fontWeight: FontWeight.bold,
-        //   color: Colors.white,
-        // ),
       );
     }).toList();
   }

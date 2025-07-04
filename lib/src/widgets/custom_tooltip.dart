@@ -42,23 +42,12 @@ class CustomTooltip extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Значение: ${item.value.toStringAsFixed(2)}',
+            '${item.value.toStringAsFixed(2)}',
             style:
                 textStyle?.copyWith(color: Colors.white70) ??
                 const TextStyle(color: Colors.white70),
             overflow: TextOverflow.ellipsis,
           ),
-          if (item.description != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              item.description!,
-              style:
-                  textStyle?.copyWith(color: Colors.white60) ??
-                  const TextStyle(color: Colors.white60),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 2,
-            ),
-          ],
         ],
       ),
     );
