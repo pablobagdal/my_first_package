@@ -11,17 +11,14 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/to/develop-packages).
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
+This is my first package. It lets you add to your application Pie chart based on config that you are free to set as you wish.
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Package allows you to add Pie Chart widget with build-in animations.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+First, add package to pubspec.yaml. Then you can add AnimatedPieChart with ChartConfig, that includes list of ChartItem's.
 
 ## Usage
 
